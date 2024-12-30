@@ -15,7 +15,7 @@ const Experiences = () => {
 
     const fetchExperiences = useCallback(() => {
         setLoading(true);
-        axios.get('http://localhost:8000/api/experiences')
+        axios.get('https://community-event-scheduler.onrender.com/api/experiences')
             .then(response => {
                 // console.log('Fetched experiences:', response.data); // Log the response
                 setExperiences(response.data);
@@ -51,7 +51,7 @@ const Experiences = () => {
             formData.append('images', experienceData.images[i]);
         }
 
-        axios.post('http://localhost:8000/api/experiences/add', formData)
+        axios.post('https://community-event-scheduler.onrender.com/api/experiences/add', formData)
             .then(response => {
                 // Add the new experience to the existing list
                 setExperiences([...experiences, response.data]);
@@ -80,7 +80,7 @@ const Experiences = () => {
                                         <LazyLoad key={idx} height={200} offset={100} once>
                                          <CardImg
     top
-    src={`http://localhost:8000/${image}`}
+    src={`https://community-event-scheduler.onrender.com/${image}`}
     alt="Experience image"
     onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/150'; }} // Fallback image
 />

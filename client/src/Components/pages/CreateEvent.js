@@ -23,7 +23,7 @@ function CreateEvent() {
         const attendeesArray = eventData.attendees.split(',').map(attendee => attendee.trim());
         const dataToSubmit = { ...eventData, attendees: attendeesArray };
 
-        axios.post('http://localhost:8000/api/events/add', dataToSubmit)
+        axios.post('https://community-event-scheduler.onrender.com/api/events/add', dataToSubmit)
             .then(response => {
                 console.log(response.data);
                 setEventData({
