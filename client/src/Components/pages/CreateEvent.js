@@ -35,8 +35,10 @@ function CreateEvent() {
                     organizer: '',
                     attendees: ''
                 });
+                alert("event added successfully")
             })
             .catch(error => {
+                alert("There was an error creating the event!")
                 console.error("There was an error creating the event!", error);
             });
     };

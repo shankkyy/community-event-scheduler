@@ -61,6 +61,7 @@ const Experiences = () => {
                 });
             })
             .catch(error => {
+                
                 console.error("There was an error sharing the experience!", error);
             });
     };
