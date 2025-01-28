@@ -1,121 +1,136 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { Card, CardBody, CardTitle, CardText, CardFooter, Container, Button } from 'reactstrap';
 import { useNavigate } from 'react-router-dom';
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+function EventList() {
+    const [events, setEvents] = useState([]);
+    const navigate = useNavigate();
 
-function Register() {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [error, setError] = useState('');
-  const navigate = useNavigate();
+    useEffect(() => {
+        axios.get('https://community-event-scheduler.onrender.com/api/events/')
+            .then(response => {
+                setEvents(response.data.reverse());
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('https://community-event-scheduler.onrender.com/api/users/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+    const handleDelete = (id) => {
+        axios.delete(`https://community-event-scheduler.onrender.com/api/events/delete/${id}`)
+            .then(() => {
+                setEvents(events.filter(event => event._id !== id));
+            })
+            .catch(error => {
+                console.log(error);
+            });
+    };
 
-      if (response.ok) {
-        console.log(await response.json());
-        navigate('/login');
-      } else if (response.status === 409) {
-        alert('Email already exists');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Registration failed. Please try again.');
-        console.log('Error:', errorData);
-      }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.log('Network error:', err);
-    }
-  };
+    const handleUpdate = (id) => {
+        navigate(`update/${id}`);
+    };
 
-  const togglePasswordVisibility = () => {
-    setPasswordVisible(!passwordVisible);
-  };
-
-  return (
-    <div
-      style={{
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        minHeight: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <div className="card p-4" style={{ width: '100%', maxWidth: '400px', backgroundColor: 'rgba(255, 255, 255, 0.8)' }}>
-        <h2 className="card-title text-center">Register</h2>
-        {error && <div className="alert alert-danger">{error}</div>}
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">Full Name</label>
-            <input
-              type="text"
-              className="form-control"
-              id="name"
-              placeholder="Enter full name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
-            <input
-              type="email"
-              className="form-control"
-              id="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              type={passwordVisible ? 'text' : 'password'}
-              className="form-control"
-              id="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-            <span
-              onClick={togglePasswordVisibility}
-              style={{
-                position: 'absolute',
-                right: '10px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                cursor: 'pointer'
-              }}
-            >
-              <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
-            </span>
-          </div>
-          <button type="submit" className="btn btn-primary w-100">Register</button>
-        </form>
-        <div className="text-center mt-3">
-          <p>Already have an account?</p>
-          <button className="btn btn-secondary" onClick={() => navigate('/login')}>Login</button>
+    return (
+        <div>
+            <div style={styles.pageBackground}></div>
+            <div style={styles.overlay}></div>
+            <Container style={{ ...styles.containerContent, marginTop: '40px' }}>
+                <h2 style={styles.heading}>📅 Upcoming Events</h2>
+                <div className="row">
+                    {events.map(event => (
+                        <div className="col-md-4" key={event._id} style={{ marginBottom: '30px' }}>
+                            <Card style={styles.card}>
+                                <CardBody>
+                                    <CardTitle tag="h5" style={styles.cardTitle}>{event.title}</CardTitle>
+                                    <CardText style={styles.cardText}>{event.description}</CardText>
+                                    <CardText><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</CardText>
+                                    <CardText><strong>Time:</strong> {event.time}</CardText>
+                                    <CardText><strong>Location:</strong> {event.location}</CardText>
+                                    <CardText><strong>Organizer:</strong> {event.organizer}</CardText>
+                                </CardBody>
+                                <CardFooter style={styles.cardFooter}>
+                                    <CardText><strong>Attendees:</strong> {event.attendees[0] || 'Anonymous'} and {event.attendees.length - 1 || Math.floor(Math.random() * 50)} more</CardText>
+                                    <div style={styles.buttonGroup}>
+                                        <Button color="primary" onClick={() => handleUpdate(event._id)} style={styles.button}>Update</Button>
+                                        <Button color="danger" onClick={() => handleDelete(event._id)} style={styles.button}>Delete</Button>
+                                    </div>
+                                </CardFooter>
+                            </Card>
+                        </div>
+                    ))}
+                </div>
+            </Container>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
 
-export default Register;
+const styles = {
+    pageBackground: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundImage: 'url(https://source.unsplash.com/1600x900/?events,celebration)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        zIndex: -2,
+    },
+    overlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: -1,
+    },
+    containerContent: {
+        position: 'relative',
+        zIndex: 1,
+        color: '#fff',
+    },
+    heading: {
+        textAlign: 'center',
+        marginBottom: '30px',
+        color: '#fff',
+        fontSize: '2rem',
+        fontWeight: 'bold',
+    },
+    card: {
+        background: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: '15px',
+        boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3)',
+        transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
+    },
+    cardHover: {
+        transform: 'scale(1.05)',
+        boxShadow: '0 12px 24px rgba(0, 0, 0, 0.4)',
+    },
+    cardTitle: {
+        color: '#333',
+        fontWeight: 'bold',
+        marginBottom: '15px',
+    },
+    cardText: {
+        color: '#555',
+        marginBottom: '10px',
+    },
+    cardFooter: {
+        backgroundColor: '#f8f9fa',
+        borderTop: '1px solid #ddd',
+        borderRadius: '0 0 15px 15px',
+        padding: '10px 15px',
+    },
+    buttonGroup: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        marginTop: '10px',
+    },
+    button: {
+        minWidth: '100px',
+    },
+};
+
+export default EventList;

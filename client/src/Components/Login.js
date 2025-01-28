@@ -42,30 +42,55 @@ function Login() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <div className="card p-4" style={{ width: '100%', maxWidth: '400px' }}>
-        <h2 className="card-title text-center">Login</h2>
-        {error && <div className="alert alert-danger">{error}</div>}
+    <div
+      style={{
+        background: 'linear-gradient(to bottom right, #6a11cb, #2575fc)',
+        minHeight: '100vh',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '20px',
+      }}
+    >
+      <div
+        className="card p-4 shadow-lg"
+        style={{
+          width: '100%',
+          maxWidth: '400px',
+          borderRadius: '15px',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        }}
+      >
+        <h2 className="card-title text-center mb-4" style={{ color: '#333' }}>
+          Login
+        </h2>
+        {error && <div className="alert alert-danger text-center">{error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
+            <label htmlFor="email" className="form-label">
+              Email address
+            </label>
             <input
               type="email"
               className="form-control"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              style={{ borderRadius: '10px', padding: '10px' }}
               required
             />
           </div>
           <div className="mb-3 position-relative">
-            <label htmlFor="password" className="form-label">Password</label>
+            <label htmlFor="password" className="form-label">
+              Password
+            </label>
             <input
               type={passwordVisible ? 'text' : 'password'}
               className="form-control"
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              style={{ borderRadius: '10px', padding: '10px' }}
               required
             />
             <span
@@ -75,17 +100,44 @@ function Login() {
                 right: '10px',
                 top: '50%',
                 transform: 'translateY(-50%)',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                color: '#555',
               }}
             >
               <FontAwesomeIcon icon={passwordVisible ? faEyeSlash : faEye} />
             </span>
           </div>
-          <button type="submit" className="btn btn-primary w-100">Submit</button>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            style={{
+              backgroundColor: '#6a11cb',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '10px',
+              fontSize: '16px',
+              fontWeight: 'bold',
+              transition: 'background-color 0.3s',
+            }}
+          >
+            Submit
+          </button>
         </form>
-        <div className="text-center mt-3">
-          <p>Don't have an account?</p>
-          <button className="btn btn-secondary" onClick={() => navigate('/')}>Register</button>
+        <div className="text-center mt-4">
+          <p style={{ marginBottom: '10px' }}>Don't have an account?</p>
+          <button
+            className="btn btn-secondary"
+            onClick={() => navigate('/')}
+            style={{
+              borderRadius: '10px',
+              padding: '10px',
+              fontWeight: 'bold',
+              backgroundColor: '#333',
+              color: '#fff',
+            }}
+          >
+            Register
+          </button>
         </div>
       </div>
     </div>
